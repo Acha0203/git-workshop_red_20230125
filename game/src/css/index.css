@@ -13,18 +13,18 @@ code {
 }
 
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 14px 'Century Gothic', Futura, sans-serif;
   margin: 20px;
 }
 
-ol, ul {
+ol,
+ul {
   padding-left: 30px;
-  list-style-type: none;
 }
 
 .board-row:after {
   clear: both;
-  content: "";
+  content: '';
   display: table;
 }
 
@@ -64,14 +64,7 @@ ol, ul {
   margin-left: 20px;
 }
 
-#restart{
-  visibility: visible;
-}
-
-.hidden{
-  visibility: hidden;
-}
-
-.winner{
-  background-color: antiquewhite;
+.disabled {
+  pointer-events: none;
+  z-index: 100;
 }

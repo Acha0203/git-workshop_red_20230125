@@ -1,27 +1,15 @@
-import React from "react";
-import Square from "./Square";
+import React from 'react';
+import Square from './Square';
 
-const Board = ({ winnerLines, squares, onClick}) => {
+const Board = ({ squares, onClick }) => {
   /**
    * マス目を表示する
    * @param {int} index
    * @returns {Function}
    */
-  if (winnerLines) console.log(winnerLines);
   const renderSquare = (index) => {
-    let winnerSquare = "";
-    if (winnerLines){
-      for (let i = 0; i < winnerLines.length; i++){
-        if (index === winnerLines[i]) winnerSquare = "winner";
-      };
-    }
-    
     return (
-      <Square
-        winnerSquare={winnerSquare}
-        squareValue={squares[index]}
-        onClick={() => onClick(index)}
-      />
+      <Square squareValue={squares[index]} onClick={() => onClick(index)} />
     );
   };
 
