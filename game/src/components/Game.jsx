@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Board from './Board';
 
 const Game = () => {
@@ -13,8 +13,9 @@ const Game = () => {
   const [playCount, setPlayCount] = useState(0);
   const [playersTurn, setPlayersTurn] = useState(true);
   const [currentSquares, setCurrentSquares] = useState([]);
+  const current = history[playCount];
 
-  const MAX_PLAY_COUNT = 5;
+  const MAX_PLAY_COUNT = 9;
 
   useEffect(() => {
     const moves = history.map((step, move) => {
@@ -35,24 +36,20 @@ const Game = () => {
   const handleClick = (index) => {
     setDisabledClick(true);
 
-    const historyCurrent = history.slice(0, playCount + 1);
+    const historyCurrentOrigin = history.slice(0, playCount + 1);
+    let historyCurrent = JSON.parse(JSON.stringify(historyCurrentOrigin));
     const current = historyCurrent[historyCurrent.length - 1];
-    const squares = current.squares.slice();
+    const squaresOrigin = current.squares.slice();
+    const squares = JSON.parse(JSON.stringify(squaresOrigin));
 
     if (calculateWinner(squares) || squares[index]) {
       return;
     }
     squares[index] = xIsNext ? 'X' : 'O';
-
-    setPlayCount(historyCurrent.length);
+    setPlayCount((prevValue) => prevValue + 1);
     setHistory([...historyCurrent, { squares }]);
     setPlayersTurn(false);
     setCurrentSquares(squares);
-
-    // setTimeout(() => {
-    // cpuAction(squares);
-    // setDisabledClick(false);
-    // }, 1000);
   };
 
   /**
@@ -64,14 +61,16 @@ const Game = () => {
   };
 
   const cpuAction = useCallback(() => {
-    if (calculateWinner(currentSquares)) return;
-    const currentHistory = history.slice(0, playCount + 2);
+    let squares = JSON.parse(JSON.stringify(currentSquares));
 
+    if (calculateWinner(squares)) return;
+    const currentHistoryOrigin = history.slice(0, playCount + 2);
+    let currentHistory = JSON.parse(JSON.stringify(currentHistoryOrigin));
     const possible_hands = [];
-    let hand = currentSquares.indexOf(null);
+    let hand = squares.indexOf(null);
     while (hand !== -1) {
       possible_hands.push(hand);
-      hand = currentSquares.indexOf(null, hand + 1);
+      hand = squares.indexOf(null, hand + 1);
     }
 
     if (possible_hands.length === 0) return;
@@ -79,23 +78,24 @@ const Game = () => {
     const action_hand =
       possible_hands[Math.floor(Math.random() * possible_hands.length)];
     const cpuStatus = !xIsNext;
-    currentSquares[action_hand] = cpuStatus ? 'X' : 'O';
-    currentHistory[history.length - 1].squares = currentSquares;
+    squares[action_hand] = cpuStatus ? 'X' : 'O';
+    // currentHistory[history.length - 1].squares = squares;
 
-    setHistory([...currentHistory, { currentSquares }]);
-    // console.log(history);
-    setPlayersTurn(true);
+    setHistory([...currentHistory, { squares }]);
+    setPlayCount((prevValue) => prevValue + 1);
     setXIsNext(xIsNext);
+    setPlayersTurn(true);
   }, [currentSquares, history, playCount, xIsNext]);
 
   useEffect(() => {
     console.log(history);
+    console.log(playCount);
 
     if (!playersTurn) {
-      // setTimeout(() => {
-      cpuAction();
-      setDisabledClick(false);
-      // }, 1000);
+      setTimeout(() => {
+        cpuAction();
+        setDisabledClick(false);
+      }, 1000);
     }
   }, [cpuAction, history, playCount, playersTurn]);
 
@@ -143,8 +143,6 @@ const Game = () => {
     }
     return null;
   };
-
-  const current = history[playCount];
 
   // 全てを初期化する
   //const resetAll = () => {
